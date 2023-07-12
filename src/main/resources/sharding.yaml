@@ -1,0 +1,31 @@
+dataSources:
+  ds:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: com.mysql.cj.jdbc.Driver
+    # chage DB config
+    jdbcUrl: jdbc:mysql://127.0.0.1:3306/demo?characterEncoding=utf-8&useUnicode=yes&autoReconnect=true&useSSL=false
+    username: demo
+    password: demo
+    maximumPoolSize: 50
+    minimumIdle: 5
+    idleTimeout: 60000
+    connectionTimeout: 5000
+    connectionTestQuery: SELECT 1 
+rules:
+- !SHARDING
+  tables:
+    sharding_log:
+      actualDataNodes: ds.sharding_log_$->{2000..2999}0$->{1..9},ds.sharding_log_$->{2000..2999}1$->{0..2}
+      tableStrategy:
+        standard:
+          shardingColumn: create_date 
+          shardingAlgorithmName: log_algorithm 
+  shardingAlgorithms:
+    log_algorithm:
+      type: CLASS_BASED
+      props:
+        strategy: standard
+        algorithmClassName: xyz.opcal.demo.sharding.fixture.DateMonthlyShardingAlgorithm
+      
+props:
+  sql-show: true
